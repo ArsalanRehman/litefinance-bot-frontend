@@ -1,75 +1,110 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 
-const TradesComponent = ({traderId, name}) => {
-  const [trades, setTrades] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const TradesComponent = ({ traderId, name }) => {
+  const [trades, setTrades] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     const fetchTrades = async () => {
       try {
         // Use the proxy endpoint instead of the original URL.
-        const response = await fetch(`http://localhost:5000/api/trades/${traderId}`, );
+        const response = await fetch(
+          `http://localhost:5000/api/trades/${traderId}`
+        )
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error('Network response was not ok')
         }
-        const htmlString = await response.text();
+        const htmlString = await response.text()
 
         // Parse the HTML string into a document
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlString, 'text/html');
+        const parser = new DOMParser()
+        const doc = parser.parseFromString(htmlString, 'text/html')
 
         // Find the section containing the trades
-        const tradesSection = doc.querySelector('section.deals.deals_trader.js_mobile_deals_content');
+        const tradesSection = doc.querySelector(
+          'section.deals.deals_trader.js_mobile_deals_content'
+        )
         if (!tradesSection) {
-          throw new Error('Trades section not found');
+          throw new Error('Trades section not found')
         }
 
         // Select all rows representing individual trades
-        const tradeRows = tradesSection.querySelectorAll('.content_row');
+        const tradeRows = tradesSection.querySelectorAll('.content_row')
 
         // Extract trade details (Instrument, Type, Volume, Open Time, Profit/Loss)
         const tradesData = Array.from(tradeRows)
-          .map(row => {
-            const cols = row.querySelectorAll('.content_col');
+          .map((row) => {
+            const cols = row.querySelectorAll('.content_col')
             // Ensure that the row contains the expected columns
-            if (cols.length < 9) return null;
+            if (cols.length < 9) return null
 
-            const instrument = cols[0].querySelector('.title a')?.textContent.trim() || '';
-            const type = cols[1].querySelector('.label')?.textContent.trim() || '';
-            const volume = cols[2].querySelector('.data_value')?.textContent.trim() || '';
-            const openTime = cols[3].querySelector('.data_value')?.textContent.trim() || '';
-            const profit = cols[8].querySelector('.data_value')?.textContent.trim() || '';
+            const instrument =
+              cols[0].querySelector('.title a')?.textContent.trim() || ''
+            const type =
+              cols[1].querySelector('.label')?.textContent.trim() || ''
+            const volume =
+              cols[2].querySelector('.data_value')?.textContent.trim() || ''
+            const openTime =
+              cols[3].querySelector('.data_value')?.textContent.trim() || ''
+            const profit =
+              cols[8].querySelector('.data_value')?.textContent.trim() || ''
 
-            return { instrument, type, volume, openTime, profit };
+            return { instrument, type, volume, openTime, profit }
           })
-          .filter(trade => trade !== null);
+          .filter((trade) => trade !== null)
 
-        setTrades(tradesData);
+        setTrades(tradesData)
       } catch (err) {
-        setError(err.message);
+        setError(err.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchTrades();
-  }, []);
+    fetchTrades()
+  }, [traderId])
 
   if (loading) {
-    return <div>Loading trades...</div>;
+    return <div>Loading trades...</div>
   }
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div>Error: {error}</div>
   }
-  
+
+  // Helper function to parse a string value into a number.
+  // This removes any non-numeric characters (except minus sign and dot).
+  const parseNumericValue = (value) => {
+    const numericString = value.replace(/[^0-9.-]+/g, '')
+    const parsed = parseFloat(numericString)
+    return isNaN(parsed) ? 0 : parsed
+  }
+
+  // Calculate totals for volume and profit
+  const totalVolume = trades.reduce((acc, trade) => {
+    return acc + parseNumericValue(trade.volume)
+  }, 0)
+
+  const totalProfit = trades.reduce((acc, trade) => {
+    return acc + parseNumericValue(trade.profit)
+  }, 0)
+
   return (
     <div>
-      <h2>Open Trades for <strong style={{ color: 'green' }}> {name} - {traderId} </strong>   </h2>
+      <h2>
+        Open Trades for{' '}
+        <strong style={{ color: 'green' }}>
+          {name} - {traderId}
+        </strong>
+      </h2>
       {trades.length === 0 ? (
         <div>No trades found.</div>
       ) : (
-        <table border="1" cellPadding="5" style={{ borderCollapse: 'collapse' }}>
+        <table
+          border='1'
+          cellPadding='5'
+          style={{ borderCollapse: 'collapse' }}
+        >
           <thead>
             <tr>
               <th>Instrument</th>
@@ -89,11 +124,18 @@ const TradesComponent = ({traderId, name}) => {
                 <td>{trade.profit}</td>
               </tr>
             ))}
+            {/* Additional row for totals */}
+            <tr style={{ fontWeight: 'bold' }}>
+              <td colSpan='2'>Totals</td>
+              <td>{totalVolume}</td>
+              <td></td>
+              <td>{totalProfit}</td>
+            </tr>
           </tbody>
         </table>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default TradesComponent;
+export default TradesComponent
