@@ -1,6 +1,8 @@
+import React, { useState } from 'react';
 import './App.css';
 import TradesComponent from './components/Trades';
-import { useState } from 'react';
+import TradingHistoryComponent from './components/TradingHistoryComponent';
+import TraderRowSummary from './components/TraderRowSummary';
 
 function App() {
   const traderList = [
@@ -9,24 +11,56 @@ function App() {
     { name: 'Blue Whale Capital', id: 1264293 },
   ];
 
-  // Use null as the initial state since no trader is selected at first.
   const [selectedTrader, setSelectedTrader] = useState(null);
+  const [showHistory, setShowHistory] = useState(false);
 
+  // When no trader is selected, show the summary table.
+  if (!selectedTrader) {
+    return (
+      <div className="App">
+        <h2>Trader List</h2>
+        <table border="1" cellPadding="5" style={{ borderCollapse: 'collapse', width: '100%' }}>
+          <thead>
+            <tr>
+              <th>Trader Name</th>
+              <th>ID</th>
+              {/* Include any additional summary columns as needed */}
+            </tr>
+          </thead>
+          <tbody>
+            {traderList.map((trader, index) => (
+              <TraderRowSummary key={index} trader={trader} onSelect={setSelectedTrader} onShowInfo={() => {}} />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  // When a trader is selected, allow toggling between Open Trades and Trading History.
   return (
-    <div className="App">
-      {selectedTrader === null ? (
-        // Show list of traders if none is selected
-        traderList.map((trader, index) => (
-          <button key={index} onClick={() => setSelectedTrader(trader)}>
-            {trader.name}
-          </button>
-        ))
+    <div className="App" style={{ padding: '20px' }}>
+      <button
+        onClick={() => {
+          setSelectedTrader(null);
+          setShowHistory(false);
+        }}
+      >
+        Back to Trader List
+      </button>
+      <h2>{selectedTrader.name}</h2>
+      <div style={{ margin: '20px 0' }}>
+        <button onClick={() => setShowHistory(false)} style={{ marginRight: '10px' }}>
+          Open Trades
+        </button>
+        <button onClick={() => setShowHistory(true)}>
+          Trading History
+        </button>
+      </div>
+      {showHistory ? (
+        <TradingHistoryComponent traderId={selectedTrader.id} onBack={() => setShowHistory(false)} />
       ) : (
-        // Show details for the selected trader
-        <div>
-          <button onClick={() => setSelectedTrader(null)}>Back to Traders</button>
-          <TradesComponent traderId={selectedTrader.id} name={selectedTrader.name} />
-        </div>
+        <TradesComponent traderId={selectedTrader.id} name={selectedTrader.name} />
       )}
     </div>
   );
