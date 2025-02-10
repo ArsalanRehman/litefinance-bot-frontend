@@ -24,7 +24,13 @@ function App() {
             <tr>
               <th>Trader Name</th>
               <th>ID</th>
-              {/* Include any additional summary columns as needed */}
+              <th>Personal Assets</th>
+              <th>total positions</th>
+              <th>Total Lot Size</th>
+              <th>Profit / Loss </th>
+              <th> info </th>
+
+
             </tr>
           </thead>
           <tbody>
