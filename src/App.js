@@ -1,75 +1,114 @@
-import React, { useState } from 'react';
-import './App.css';
-import TradesComponent from './components/Trades';
-import TradingHistoryComponent from './components/TradingHistoryComponent';
-import TraderRowSummary from './components/TraderRowSummary';
+import React, { useState } from 'react'
+import {
+  Container,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+  Button,
+  Box,
+} from '@mui/material'
+import TradesComponent from './components/Trades'
+import TradingHistoryComponent from './components/TradingHistoryComponent'
+import TraderRowSummary from './components/TraderRowSummary'
 
 function App() {
   const traderList = [
     { name: 'MRT', id: 3417809 },
     { name: 'MRT 2', id: 2924129 },
     { name: 'Blue Whale Capital', id: 1264293 },
-  ];
+    { name: 'Mafia Invest', id: 2634386 },
+    { name: 'TradingSCapital', id: 1143035 },
+    // { name: 'TradingSCapital', id: 1143035 },
+  ]
 
-  const [selectedTrader, setSelectedTrader] = useState(null);
-  const [showHistory, setShowHistory] = useState(false);
+  const [selectedTrader, setSelectedTrader] = useState(null)
+  const [showHistory, setShowHistory] = useState(false)
 
   // When no trader is selected, show the summary table.
   if (!selectedTrader) {
     return (
-      <div className="App">
-        <h2>Trader List</h2>
-        <table border="1" cellPadding="5" style={{ borderCollapse: 'collapse', width: '100%' }}>
-          <thead>
-            <tr>
-              <th>Trader Name</th>
-              <th>ID</th>
-              <th>Personal Assets</th>
-              <th>total positions</th>
-              <th>Total Lot Size</th>
-              <th>Profit / Loss </th>
-              <th> info </th>
-
-
-            </tr>
-          </thead>
-          <tbody>
-            {traderList.map((trader, index) => (
-              <TraderRowSummary key={index} trader={trader} onSelect={setSelectedTrader} onShowInfo={() => {}} />
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
+      <Container sx={{ mt: 4 }}>
+        <Typography variant='h4' gutterBottom>
+          Trader List
+        </Typography>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Trader Name</TableCell>
+                <TableCell>ID</TableCell>
+                <TableCell>Personal Assets</TableCell>
+                <TableCell>Total Positions</TableCell>
+                <TableCell>Total Lot Size</TableCell>
+                <TableCell>Profit / Loss</TableCell>
+                <TableCell>Info</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {traderList.map((trader, index) => (
+                <TraderRowSummary
+                  key={index}
+                  trader={trader}
+                  onSelect={setSelectedTrader}
+                  onShowInfo={() => {}}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Container>
+    )
   }
 
   // When a trader is selected, allow toggling between Open Trades and Trading History.
   return (
-    <div className="App" style={{ padding: '20px' }}>
-      <button
+    <Container sx={{ mt: 4 }}>
+      <Button
+        variant='contained'
         onClick={() => {
-          setSelectedTrader(null);
-          setShowHistory(false);
+          setSelectedTrader(null)
+          setShowHistory(false)
         }}
+        sx={{ mb: 2 }}
       >
         Back to Trader List
-      </button>
-      <h2>{selectedTrader.name}</h2>
-      <div style={{ margin: '20px 0' }}>
-        <button onClick={() => setShowHistory(false)} style={{ marginRight: '10px' }}>
+      </Button>
+      <Typography variant='h4' gutterBottom>
+        {selectedTrader.name}
+      </Typography>
+      <Box sx={{ my: 2 }}>
+        <Button
+          variant={showHistory ? 'outlined' : 'contained'}
+          onClick={() => setShowHistory(false)}
+          sx={{ mr: 1 }}
+        >
           Open Trades
-        </button>
-        <button onClick={() => setShowHistory(true)}>
+        </Button>
+        <Button
+          variant={showHistory ? 'contained' : 'outlined'}
+          onClick={() => setShowHistory(true)}
+        >
           Trading History
-        </button>
-      </div>
+        </Button>
+      </Box>
       {showHistory ? (
-        <TradingHistoryComponent traderId={selectedTrader.id} onBack={() => setShowHistory(false)} />
+        <TradingHistoryComponent
+          traderId={selectedTrader.id}
+          onBack={() => setShowHistory(false)}
+        />
       ) : (
-        <TradesComponent traderId={selectedTrader.id} name={selectedTrader.name} />
+        <TradesComponent
+          traderId={selectedTrader.id}
+          name={selectedTrader.name}
+        />
       )}
-    </div>
-  );
+    </Container>
+  )
 }
 
-export default App;
+export default App

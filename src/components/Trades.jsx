@@ -1,4 +1,17 @@
 import React, { useEffect, useState } from 'react'
+import {
+  Container,
+  Typography,
+  CircularProgress,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from '@mui/material'
 
 const TradesComponent = ({ traderId, name }) => {
   const [trades, setTrades] = useState([])
@@ -66,10 +79,26 @@ const TradesComponent = ({ traderId, name }) => {
   }, [traderId])
 
   if (loading) {
-    return <div>Loading trades...</div>
+    return (
+      <Box
+        display='flex'
+        justifyContent='center'
+        alignItems='center'
+        minHeight='200px'
+      >
+        <CircularProgress />
+      </Box>
+    )
   }
+
   if (error) {
-    return <div>Error: {error}</div>
+    return (
+      <Container>
+        <Typography color='error' variant='h6'>
+          Error: {error}
+        </Typography>
+      </Container>
+    )
   }
 
   // Helper function to parse a string value into a number.
@@ -90,51 +119,51 @@ const TradesComponent = ({ traderId, name }) => {
   }, 0)
 
   return (
-    <div>
-      <h2>
+    <Container>
+      <Typography variant='h5' gutterBottom>
         Open Trades for{' '}
         <strong style={{ color: 'green' }}>
           {name} - {traderId}
         </strong>
-      </h2>
+      </Typography>
       {trades.length === 0 ? (
-        <div>No trades found.</div>
+        <Typography>No trades found.</Typography>
       ) : (
-        <table
-          border='1'
-          cellPadding='5'
-          style={{ borderCollapse: 'collapse' }}
-        >
-          <thead>
-            <tr>
-              <th>Instrument</th>
-              <th>Type</th>
-              <th>Volume</th>
-              <th>Open Time</th>
-              <th>Profit/Loss</th>
-            </tr>
-          </thead>
-          <tbody>
-            {trades.map((trade, index) => (
-              <tr key={index}>
-                <td>{trade.instrument}</td>
-                <td>{trade.type}</td>
-                <td>{trade.volume}</td>
-                <td>{trade.openTime}</td>
-                <td>{trade.profit}</td>
-              </tr>
-            ))}
-            {/* Additional row for totals */}
-            <tr style={{ fontWeight: 'bold' }}>
-              <td colSpan='2'>Totals</td>
-              <td>{totalVolume}</td>
-              <td></td>
-              <td>{totalProfit}</td>
-            </tr>
-          </tbody>
-        </table>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Instrument</TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell>Volume</TableCell>
+                <TableCell>Open Time</TableCell>
+                <TableCell>Profit/Loss</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {trades.map((trade, index) => (
+                <TableRow key={index}>
+                  <TableCell>{trade.instrument}</TableCell>
+                  <TableCell>{trade.type}</TableCell>
+                  <TableCell>{trade.volume}</TableCell>
+                  <TableCell>{trade.openTime}</TableCell>
+                  <TableCell>{trade.profit}</TableCell>
+                </TableRow>
+              ))}
+              {/* Additional row for totals */}
+              <TableRow>
+                <TableCell colSpan={2} sx={{ fontWeight: 'bold' }}>
+                  Totals
+                </TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>{totalVolume}</TableCell>
+                <TableCell />
+                <TableCell sx={{ fontWeight: 'bold' }}>{totalProfit}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
-    </div>
+    </Container>
   )
 }
 
