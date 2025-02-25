@@ -23,7 +23,6 @@ function App() {
     { name: 'Blue Whale Capital', id: 1264293 },
     { name: 'Mafia Invest', id: 2634386 },
     { name: 'TradingSCapital', id: 1143035 },
-    // { name: 'TradingSCapital', id: 1143035 },
   ]
 
   const [selectedTrader, setSelectedTrader] = useState(null)
@@ -43,9 +42,9 @@ function App() {
                 <TableCell>Trader Name</TableCell>
                 <TableCell>ID</TableCell>
                 <TableCell>Personal Assets</TableCell>
-                <TableCell>Total Positions</TableCell>
-                <TableCell>Total Lot Size</TableCell>
-                <TableCell>Profit / Loss</TableCell>
+                <TableCell>Total Open Trades</TableCell>
+                <TableCell>Total Volume</TableCell>
+                <TableCell>Total Profit / Loss</TableCell>
                 <TableCell>Info</TableCell>
               </TableRow>
             </TableHead>
@@ -97,10 +96,7 @@ function App() {
         </Button>
       </Box>
       {showHistory ? (
-        <TradingHistoryComponent
-          traderId={selectedTrader.id}
-          onBack={() => setShowHistory(false)}
-        />
+        <TradingHistoryComponent traderId={selectedTrader.id} />
       ) : (
         <TradesComponent
           traderId={selectedTrader.id}
