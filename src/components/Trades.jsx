@@ -122,6 +122,8 @@ const TradesComponent = ({ traderId, name }) => {
                 </TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>{totalVolume}</TableCell>
                 <TableCell />
+                <TableCell />
+                <TableCell />
                 <TableCell sx={{ fontWeight: 'bold' }}>{totalProfit}</TableCell>
               </TableRow>
             </TableBody>
