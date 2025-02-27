@@ -97,6 +97,8 @@ const TradesComponent = ({ traderId, name }) => {
                 <TableCell>Instrument</TableCell>
                 <TableCell>Type</TableCell>
                 <TableCell>Volume</TableCell>
+                <TableCell>Open Price</TableCell>
+                <TableCell>Current Price</TableCell>
                 <TableCell>Open Time</TableCell>
                 <TableCell>Profit / Loss</TableCell>
               </TableRow>
@@ -107,6 +109,8 @@ const TradesComponent = ({ traderId, name }) => {
                   <TableCell>{trade.instrument}</TableCell>
                   <TableCell>{trade.type}</TableCell>
                   <TableCell>{trade.volume}</TableCell>
+                  <TableCell>{trade.openPrice}</TableCell>
+                  <TableCell>{trade.currentPrice}</TableCell>
                   <TableCell>{trade.openTime}</TableCell>
                   <TableCell>{trade.profit}</TableCell>
                 </TableRow>
