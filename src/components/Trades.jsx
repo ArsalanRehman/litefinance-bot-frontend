@@ -23,7 +23,7 @@ const TradesComponent = ({ traderId, name }) => {
     const fetchTrades = async () => {
       try {
         const response = await fetch(
-          `http://${process.env.REACT_APP_IP}/api/trades/${traderId}`
+          `https://${process.env.REACT_APP_IP}/api/trades/${traderId}`
         )
         if (!response.ok) {
           throw new Error('Network response was not ok')
