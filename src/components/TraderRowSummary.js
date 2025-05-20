@@ -23,7 +23,7 @@ const TraderRowSummary = ({ trader, onSelect, onShowInfo }) => {
     const fetchTrades = async () => {
       try {
         const response = await fetch(
-          `https://${process.env.REACT_APP_IP}/api/trades/${trader.id}`
+          `${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_IP}/api/trades/${trader.id}`
         )
         
         if (!response.ok) {
@@ -55,7 +55,7 @@ const TraderRowSummary = ({ trader, onSelect, onShowInfo }) => {
     const fetchTraderInfo = async () => {
       try {
         const response = await fetch(
-          `https://${process.env.REACT_APP_IP}/api/traderInfo/${trader.id}`
+          `${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_IP}/api/traderInfo/${trader.id}`
         )
         if (!response.ok) {
           throw new Error('Network response was not ok')

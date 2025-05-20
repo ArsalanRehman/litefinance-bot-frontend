@@ -23,7 +23,7 @@ const TradingHistoryComponent = ({ traderId }) => {
     const fetchHistory = async () => {
       try {
         const response = await fetch(
-          `https://${process.env.REACT_APP_IP}/api/tradingHistory/${traderId}`
+          `${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_IP}/api/tradingHistory/${traderId}`
         )
         if (!response.ok) {
           throw new Error('Failed to fetch trading history')
