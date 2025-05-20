@@ -23,6 +23,9 @@ function App() {
     { name: 'Blue Whale Capital', id: 1264293 },
     { name: 'Mafia Invest', id: 2634386 },
     { name: 'TradingSCapital', id: 1143035 },
+    { name: 'Ichi', id: 2632660 },
+    { name: 'Phamhien', id: 941691 },
+    { name: 'Formula1', id: 2998600 },
   ]
 
   const [selectedTrader, setSelectedTrader] = useState(null)
