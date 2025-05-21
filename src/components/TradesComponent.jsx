@@ -1,9 +1,6 @@
-// components/TradesComponent.js
 import React, { useState, useEffect } from 'react'
 import {
-  Container,
   Typography,
-  CircularProgress,
   Box,
   Table,
   TableBody,
@@ -12,80 +9,74 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Alert,
 } from '@mui/material'
-
-const TradesComponent = ({ traderId, name }) => {
+import Skeleton from '@mui/material/Skeleton'
+export default function TradesComponent({ traderId }) {
   const [trades, setTrades] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
-    const fetchTrades = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_IP}/api/trades/${traderId}`
-        )
-        if (!response.ok) {
-          throw new Error('Network response was not ok')
-        }
-        const tradesData = await response.json()
-        setTrades(tradesData)
-      } catch (err) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchTrades()
-  }, [traderId])
-
-  // Helper function to parse numeric strings.
   const parseNumericValue = (value) => {
     const numericString = value.replace(/[^0-9.-]+/g, '')
     const parsed = parseFloat(numericString)
     return isNaN(parsed) ? 0 : parsed
   }
 
+  useEffect(() => {
+    async function fetchTrades() {
+      try {
+        const res = await fetch(
+          `${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_IP}/api/trades/${traderId}`
+        )
+        if (!res.ok) throw new Error('Network response was not ok')
+        setTrades(await res.json())
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchTrades()
+  }, [traderId])
+
   const totalVolume = trades.reduce(
-    (acc, trade) => acc + parseNumericValue(trade.volume),
+    (acc, t) => acc + parseNumericValue(t.volume),
     0
   )
   const totalProfit = trades.reduce(
-    (acc, trade) => acc + parseNumericValue(trade.profit),
+    (acc, t) => acc + parseNumericValue(t.profit),
     0
   )
 
   if (loading) {
     return (
-      <Box
-        display='flex'
-        justifyContent='center'
-        alignItems='center'
-        minHeight='200px'
-      >
-        <CircularProgress />
-      </Box>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableBody>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <TableRow key={i}>
+                {[...Array(7)].map((__, j) => (
+                  <TableCell key={j}>
+                    <Skeleton />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     )
   }
 
   if (error) {
-    return (
-      <Container>
-        <Typography color='error' variant='h6'>
-          Error: {error}
-        </Typography>
-      </Container>
-    )
+    return <Alert severity='error'>Error: {error}</Alert>
   }
 
   return (
-    <Container>
+    <>
       <Typography variant='h5' gutterBottom>
-        Open Trades for{' '}
-        <strong style={{ color: 'green' }}>
-          {name} - {traderId}
-        </strong>
+        Open Trades for {traderId}
       </Typography>
       {trades.length === 0 ? (
         <Typography>No trades found.</Typography>
@@ -100,12 +91,12 @@ const TradesComponent = ({ traderId, name }) => {
                 <TableCell>Open Price</TableCell>
                 <TableCell>Current Price</TableCell>
                 <TableCell>Open Time</TableCell>
-                <TableCell>Profit / Loss</TableCell>
+                <TableCell>P/L</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {trades.map((trade, index) => (
-                <TableRow key={index}>
+              {trades.map((trade, idx) => (
+                <TableRow key={idx}>
                   <TableCell>{trade.instrument}</TableCell>
                   <TableCell>{trade.type}</TableCell>
                   <TableCell>{trade.volume}</TableCell>
@@ -115,7 +106,6 @@ const TradesComponent = ({ traderId, name }) => {
                   <TableCell>{trade.profit}</TableCell>
                 </TableRow>
               ))}
-              {/* Totals row */}
               <TableRow>
                 <TableCell colSpan={2} sx={{ fontWeight: 'bold' }}>
                   Totals
@@ -130,8 +120,6 @@ const TradesComponent = ({ traderId, name }) => {
           </Table>
         </TableContainer>
       )}
-    </Container>
+    </>
   )
 }
-
-export default TradesComponent

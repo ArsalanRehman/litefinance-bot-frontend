@@ -1,8 +1,8 @@
-// components/TraderRowSummary.js
 import React, { useEffect, useState } from 'react'
 import { TableRow, TableCell, Button } from '@mui/material'
+import { Link as RouterLink } from 'react-router-dom'
 
-const TraderRowSummary = ({ trader, onSelect, onShowInfo }) => {
+export default function TraderRowSummary({ trader }) {
   const [tradesSummary, setTradesSummary] = useState({
     count: 0,
     totalVolume: 0,
@@ -11,88 +11,81 @@ const TraderRowSummary = ({ trader, onSelect, onShowInfo }) => {
   const [personalAssets, setPersonalAssets] = useState('Loading...')
   const [loadingTrades, setLoadingTrades] = useState(true)
 
-  // Helper to convert strings to numbers.
   const parseNumericValue = (value) => {
     const numericString = value.replace(/[^0-9.-]+/g, '')
     const parsed = parseFloat(numericString)
     return isNaN(parsed) ? 0 : parsed
   }
 
-  // Fetch trades summary data.
   useEffect(() => {
-    const fetchTrades = async () => {
+    async function fetchTrades() {
       try {
-        const response = await fetch(
+        const res = await fetch(
           `${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_IP}/api/trades/${trader.id}`
         )
-        
-        if (!response.ok) {
-          throw new Error('Network response was not ok')
-        }
-        const tradesData = await response.json()
-        const count = tradesData.length
-        const totalVolume = tradesData.reduce(
-          (acc, trade) => acc + parseNumericValue(trade.volume),
+        const data = await res.json()
+        const count = data.length
+        const totalVolume = data.reduce(
+          (acc, t) => acc + parseNumericValue(t.volume),
           0
         )
-        const totalProfit = tradesData.reduce(
-          (acc, trade) => acc + parseNumericValue(trade.profit),
+        const totalProfit = data.reduce(
+          (acc, t) => acc + parseNumericValue(t.profit),
           0
         )
         setTradesSummary({ count, totalVolume, totalProfit })
-      } catch (err) {
-        console.error(err)
+      } catch {
+        // silent
       } finally {
         setLoadingTrades(false)
       }
     }
-
     fetchTrades()
   }, [trader.id])
 
-  // Fetch trader info for personal assets.
   useEffect(() => {
-    const fetchTraderInfo = async () => {
+    async function fetchInfo() {
       try {
-        const response = await fetch(
+        const res = await fetch(
           `${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_IP}/api/traderInfo/${trader.id}`
         )
-        if (!response.ok) {
-          throw new Error('Network response was not ok')
-        }
-        const info = await response.json()
+        const info = await res.json()
         setPersonalAssets(info.personalAssets)
-      } catch (error) {
+      } catch {
         setPersonalAssets('Error')
       }
     }
-
-    fetchTraderInfo()
+    fetchInfo()
   }, [trader.id])
 
   return (
-    <TableRow onClick={() => onSelect(trader)} sx={{ cursor: 'pointer' }}>
+    <TableRow
+      component={RouterLink}
+      to={`/trader/${trader.id}`}
+      sx={{
+        cursor: 'pointer',
+        textDecoration: 'none',
+        '&:hover': { backgroundColor: 'action.hover' },
+      }}
+    >
       <TableCell>{trader.name}</TableCell>
       <TableCell>{trader.id}</TableCell>
       <TableCell>{personalAssets}</TableCell>
+      <TableCell>{loadingTrades ? 'Loading…' : tradesSummary.count}</TableCell>
       <TableCell>
-        {loadingTrades ? 'Loading...' : tradesSummary.count}
-      </TableCell>
-      <TableCell>
-        {loadingTrades ? 'Loading...' : tradesSummary.totalVolume}
+        {loadingTrades ? 'Loading…' : tradesSummary.totalVolume}
       </TableCell>
       <TableCell
         sx={{
-          color: loadingTrades
-            ? 'inherit'
-            : tradesSummary.totalProfit > 0
-            ? 'green'
-            : tradesSummary.totalProfit < 0
-            ? 'red'
-            : 'inherit',
+          color:
+            !loadingTrades && tradesSummary.totalProfit > 0
+              ? 'green'
+              : !loadingTrades && tradesSummary.totalProfit < 0
+              ? 'red'
+              : 'inherit',
         }}
       >
-        {loadingTrades ? 'Loading...' : tradesSummary.totalProfit}
+        {loadingTrades ? 'Loading…' : tradesSummary.totalProfit}
       </TableCell>
       <TableCell>
         <Button
@@ -100,7 +93,7 @@ const TraderRowSummary = ({ trader, onSelect, onShowInfo }) => {
           size='small'
           onClick={(e) => {
             e.stopPropagation()
-            onShowInfo(trader)
+            // TODO: open an info dialog here
           }}
         >
           Info
@@ -109,5 +102,3 @@ const TraderRowSummary = ({ trader, onSelect, onShowInfo }) => {
     </TableRow>
   )
 }
-
-export default TraderRowSummary
