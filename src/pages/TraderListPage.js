@@ -20,6 +20,12 @@ const traderList = [
   { name: 'Ichi', id: 2632660 },
   { name: 'Phamhien', id: 941691 },
   { name: 'Formula1', id: 2998600 },
+  { name: 'alireza135', id: 1258999 },
+  { name: 'TrustTrade', id: 2236623 },
+  { name: 'mndali1*', id: 1582195 },
+  { name: 'da1n', id: 1595635 },
+  //{ name: 'alireza135', id: 1258999 },
+
 ]
 
 export default function TraderListPage() {
